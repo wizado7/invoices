@@ -81,5 +81,52 @@ public class InvoiceUpdateServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try  {
+            int invoiceId = Integer.parseInt(req.getParameter("invoiceId"));
+            String firmName = req.getParameter("firmName");
+
+            Firm firm = firmDAO.getFirmByName(firmName);
+            if (firm == null) {
+                firm = new Firm();
+                firm.setName(firmName);
+                firmDAO.addFirm(firm);
+                firm = firmDAO.getFirmByName(firmName);
+            }
+
+
+            Invoice invoice = invoiceDAO.getInvoiceById(invoiceId);
+            invoice.setFirmId(firm.getId());
+            invoiceDAO.updateInvoice(invoice);
+
+            Map<String, String[]> parameterMap = req.getParameterMap();
+            for (String paramName : parameterMap.keySet()) {
+                if (paramName.startsWith("item_")) {
+                    int itemId = Integer.parseInt(paramName.substring(5));
+                    int quantity = Integer.parseInt(req.getParameter(paramName));
+
+                    if (quantity > 0) {
+                        InvoiceItem invoiceItem = invoiceItemDAO.getInvoiceItemByInvoiceAndItemId(invoiceId, itemId);
+                        if (invoiceItem == null) {
+
+                            invoiceItem = new InvoiceItem();
+                            invoiceItem.setInvoiceId(invoiceId);
+                            invoiceItem.setItemId(itemId);
+                            invoiceItem.setQuantity(quantity);
+                            invoiceItemDAO.addInvoiceItem(invoiceItem);
+                        } else {
+                            invoiceItem.setQuantity(quantity);
+                            invoiceItemDAO.updateInvoiceItem(invoiceItem);
+                        }
+                    } else {
+                        invoiceItemDAO.deleteInvoiceItem(invoiceId, itemId);
+                    }
+                }
+            }
+
+            resp.sendRedirect("/invoices");
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Ошибка при обновлении накладной");
+        }
     }
 }
