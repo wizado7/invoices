@@ -6,7 +6,6 @@ public class Firm {
     private String address;
     private String phone;
 
-
     public Firm() {}
 
     public Firm(Integer id, String name, String address, String phone) {
@@ -15,7 +14,6 @@ public class Firm {
         this.address = address;
         this.phone = phone;
     }
-
 
     public int getId() {
         return id;
