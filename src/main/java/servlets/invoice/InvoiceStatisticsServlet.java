@@ -22,6 +22,7 @@ import java.util.List;
 @WebServlet("/invoices/statistics")
 public class InvoiceStatisticsServlet extends HttpServlet {
     private InvoiceDAO invoiceDAO;
+    private FirmDAO firmDAO;
 
     @Override
     public void init() {
@@ -29,6 +30,7 @@ public class InvoiceStatisticsServlet extends HttpServlet {
         try {
             connection = ConnectionManager.getConnection();
             invoiceDAO = new InvoiceDAOImpl(connection);
+            firmDAO = new FirmDAOImpl(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
@@ -36,6 +38,23 @@ public class InvoiceStatisticsServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
 
+            List<Invoice> invoices = invoiceDAO.getAllInvoices();
+
+            int totalInvoices = invoices.size();
+            int totalFirms = firmDAO.getAllFirms().size();
+            double totalAmount = invoices.stream().mapToDouble(Invoice::getTotalAmount).sum();
+
+
+            req.setAttribute("totalInvoices", totalInvoices);
+            req.setAttribute("totalFirms", totalFirms);
+            req.setAttribute("totalAmount", totalAmount);
+
+            req.getRequestDispatcher("/invoices-statistics.jsp").forward(req, resp);
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Ошибка при загрузке статистики");
+        }
     }
 }
