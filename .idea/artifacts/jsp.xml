@@ -1,11 +1,22 @@
 <component name="ArtifactManager">
-  <artifact type="exploded-war" name="jsp">
+  <artifact type="war" build-on-make="true" name="jsp">
     <output-path>$PROJECT_DIR$/out/artifacts/jsp</output-path>
-    <root id="root">
-      <element id="dir-copy" path="$PROJECT_DIR$/src/main/webapp/WEB-INF" />
-      <element id="dir-copy" path="$PROJECT_DIR$/src/main/webapp/view" />
-      <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/view/jsp/invoices.jsp" />
+    <root id="archive" name="jsp.war">
+      <element id="module-output" name="invoices_db" />
+      <element id="dir-copy" path="$PROJECT_DIR$/src/main/java" />
       <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/index.jsp" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/view/jsp/invoices.jsp" />
+      <element id="javaee-facet-resources" facet="invoices_db/web/Web" />
+      <element id="dir-copy" path="$PROJECT_DIR$/src/main/webapp/META-INF" />
+      <element id="dir-copy" path="$PROJECT_DIR$/src/main/java/servlets" />
+      <element id="dir-copy" path="$PROJECT_DIR$/src/main/webapp/view" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/java/servlets/invoice/InvoicesListServlet.java" />
+      <element id="javaee-facet-resources" facet="invoices_db/web/Web2" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="invoices_db" />
+        </element>
+      </element>
     </root>
   </artifact>
 </component>
