@@ -94,22 +94,59 @@ public class FirmDAOImpl implements FirmDAO {
     }
 
     @Override
-    public Firm getFirmByName(String firmName) {
+    public Firm getFirmByName(String name) {
+        String sql = "SELECT * FROM firms WHERE name = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setString(1, name);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                Firm firm = new Firm();
+                firm.setId(rs.getInt("id"));
+                firm.setName(rs.getString("name"));
+                return firm;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
+    }
+
+    @Override
+    public List<Firm> getFirmsByField(String field, String value) {
+        List<Firm> firms = new ArrayList<>();
+        String query = "SELECT * FROM firms WHERE " + field + " LIKE ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, "%" + value + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Firm firm = new Firm();
+                    firm.setId((int) rs.getLong("id"));
+                    firm.setName(rs.getString("name"));
+                    firm.setAddress(rs.getString("address"));
+                    firm.setPhone(rs.getString("phone"));
+                    firms.add(firm);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return firms;
     }
 
     @Override
     public List<Firm> getFirmsByName(String name) {
-        return null;
+        return getFirmsByField("name", name);
     }
 
     @Override
     public List<Firm> getFirmsByAddress(String address) {
-        return null;
+        return getFirmsByField("address", address);
     }
 
     @Override
     public List<Firm> getFirmsByPhone(String phone) {
-        return null;
+        return getFirmsByField("phone", phone);
     }
 }
+

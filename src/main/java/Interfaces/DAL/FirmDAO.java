@@ -10,6 +10,9 @@ public interface FirmDAO {
     void updateFirm(Firm firm);
     void deleteFirm(long id);
     Firm getFirmByName(String firmName);
+
+    List<Firm> getFirmsByField(String field, String value);
+
     List<Firm> getFirmsByName(String name);
     List<Firm> getFirmsByAddress(String address);
     List<Firm> getFirmsByPhone(String phone);
