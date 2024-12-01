@@ -30,6 +30,20 @@ public class ItemDAOImpl implements ItemDAO {
 
     @Override
     public Item getItemById(int id) {
+        String sql = "SELECT * FROM items WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Item item = new Item();
+                item.setId(resultSet.getInt("id"));
+                item.setName(resultSet.getString("name"));
+                item.setPrice(resultSet.getDouble("price"));
+                return item;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -76,11 +90,49 @@ public class ItemDAOImpl implements ItemDAO {
 
     @Override
     public List<Item> getItemsByName(String name) {
-        return null;
+        return getItemsByField("name", name);
     }
 
     @Override
     public List<Item> getItemsByPrice(double price) {
-        return null;
+        List<Item> items = new ArrayList<>();
+        String query = "SELECT * FROM items WHERE price = ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setDouble(1, price);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Item item = new Item();
+                    item.setId((int) rs.getLong("id"));
+                    item.setName(rs.getString("name"));
+                    item.setPrice(rs.getDouble("price"));
+                    items.add(item);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return items;
+    }
+
+    private List<Item> getItemsByField(String field, String value) {
+        List<Item> items = new ArrayList<>();
+        String query = "SELECT * FROM items WHERE " + field + " LIKE ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, "%" + value + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Item item = new Item();
+                    item.setId((int) rs.getLong("id"));
+                    item.setName(rs.getString("name"));
+                    item.setPrice(rs.getDouble("price"));
+                    items.add(item);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return items;
     }
 }
