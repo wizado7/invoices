@@ -283,7 +283,32 @@ public class InvoiceDAOImpl implements InvoiceDAO {
 
     @Override
     public List<Invoice> getInvoicesWithPagination(int limit, int offset) throws SQLException {
-        return null;
+        String query = """
+        SELECT invoices.id AS invoice_id, firms.name AS firm_name, invoices.invoice_date,
+               COALESCE(SUM(invoice_items.quantity * items.price), 0) AS total_amount
+        FROM invoices
+        LEFT JOIN firms ON invoices.firm_id = firms.id
+        LEFT JOIN invoice_items ON invoices.id = invoice_items.invoice_id
+        LEFT JOIN items ON invoice_items.item_id = items.id
+        GROUP BY invoices.id, firms.name, invoices.invoice_date
+        LIMIT ? OFFSET ?;
+    """;
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setInt(1, limit);
+            stmt.setInt(2, offset);
+            try (ResultSet rs = stmt.executeQuery()) {
+                List<Invoice> invoices = new ArrayList<>();
+                while (rs.next()) {
+                    Invoice invoice = new Invoice();
+                    invoice.setId(rs.getInt("invoice_id"));
+                    invoice.setFirmName(rs.getString("firm_name"));
+                    invoice.setInvoiceDate(rs.getDate("invoice_date").toLocalDate());
+                    invoice.setTotalAmount(rs.getDouble("total_amount"));
+                    invoices.add(invoice);
+                }
+                return invoices;
+            }
+        }
     }
 
     @Override
