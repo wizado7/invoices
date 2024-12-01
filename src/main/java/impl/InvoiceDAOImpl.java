@@ -225,12 +225,60 @@ public class InvoiceDAOImpl implements InvoiceDAO {
 
     @Override
     public int getTotalSearchCount(String search) throws SQLException {
-        return 0;
+        String query = """
+                    SELECT COUNT(DISTINCT invoices.id) AS total
+        FROM invoices
+        LEFT JOIN firms ON invoices.firm_id = firms.id
+        WHERE firms.name LIKE ? OR invoices.id LIKE ?;
+    """;
+        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+            stmt.setString(1, "%" + search + "%");
+            stmt.setString(2, "%" + search + "%");
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    return rs.getInt("total");
+                }
+                return 0;
+            }
+        }
     }
 
     @Override
     public int getTotalCountByDateAndName(String search, Integer day, Integer month, Integer year) throws SQLException {
-        return 0;
+        StringBuilder query = new StringBuilder("SELECT COUNT(DISTINCT invoices.id) AS total FROM invoices LEFT JOIN firms ON invoices.firm_id = firms.id WHERE 1=1");
+
+        if (search != null && !search.isEmpty()) {
+            query.append(" AND (firms.name LIKE ? OR invoices.id LIKE ?)");
+        }
+        if (day != null) {
+            query.append(" AND DAY(invoices.invoice_date) = ?");
+        }
+        if (month != null) {
+            query.append(" AND MONTH(invoices.invoice_date) = ?");
+        }
+        if (year != null) {
+            query.append(" AND YEAR(invoices.invoice_date) = ?");
+        }
+
+        try (PreparedStatement stmt = connection.prepareStatement(query.toString())) {
+            int paramIndex = 1;
+            if (search != null && !search.isEmpty()) {
+                stmt.setString(paramIndex++, "%" + search + "%");
+                stmt.setString(paramIndex++, "%" + search + "%");
+            }
+            if (day != null) {
+                stmt.setInt(paramIndex++, day);
+            }
+            if (month != null) {
+                stmt.setInt(paramIndex++, month);
+            }
+            if (year != null) {
+                stmt.setInt(paramIndex++, year);
+            }
+            try (ResultSet rs = stmt.executeQuery()) {
+                return rs.next() ? rs.getInt("total") : 0;
+            }
+        }
     }
 
     @Override
