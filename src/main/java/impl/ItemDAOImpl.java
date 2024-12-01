@@ -3,10 +3,16 @@ package impl;
 import Interfaces.DAL.ItemDAO;
 import entity.Item;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
 public class ItemDAOImpl implements ItemDAO {
+    private final Connection connection;
+
+    public ItemDAOImpl(Connection connection) {
+        this.connection = connection;
+    }
     @Override
     public void addItem(Item item) {
 

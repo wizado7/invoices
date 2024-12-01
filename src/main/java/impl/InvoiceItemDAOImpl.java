@@ -3,10 +3,17 @@ package impl;
 import Interfaces.DAL.InvoiceItemDAO;
 import entity.InvoiceItem;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
 public class InvoiceItemDAOImpl implements InvoiceItemDAO {
+    private final Connection connection;
+
+    public InvoiceItemDAOImpl(Connection connection) {
+        this.connection = connection;
+    }
+
     @Override
     public void addInvoiceItem(InvoiceItem invoiceItem) {
 
