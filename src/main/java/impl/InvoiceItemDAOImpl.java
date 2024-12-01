@@ -4,6 +4,7 @@ import Interfaces.DAL.InvoiceItemDAO;
 import entity.InvoiceItem;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class InvoiceItemDAOImpl implements InvoiceItemDAO {
@@ -93,12 +94,45 @@ public class InvoiceItemDAOImpl implements InvoiceItemDAO {
 
     @Override
     public List<InvoiceItem> getInvoiceItemsByInvoiceId(int invoiceId) {
-        return null;
+        List<InvoiceItem> invoiceItems = new ArrayList<>();
+        String sql = "SELECT * FROM invoice_items WHERE invoice_id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setInt(1, invoiceId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                InvoiceItem invoiceItem = new InvoiceItem();
+                invoiceItem.setInvoiceId(rs.getInt("invoice_id"));
+                invoiceItem.setItemId(rs.getInt("item_id"));
+                invoiceItem.setQuantity(rs.getInt("quantity"));
+                invoiceItems.add(invoiceItem);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return invoiceItems;
     }
 
 
     @Override
     public InvoiceItem getInvoiceItemByInvoiceAndItemId(int invoiceId, int itemId) {
+        String sql = "SELECT * FROM invoice_items WHERE invoice_id = ? AND item_id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, invoiceId);
+            statement.setInt(2, itemId);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    InvoiceItem invoiceItem = new InvoiceItem();
+                    invoiceItem.setId(resultSet.getInt("id"));
+                    invoiceItem.setInvoiceId(resultSet.getInt("invoice_id"));
+                    invoiceItem.setItemId(resultSet.getInt("item_id"));
+                    invoiceItem.setQuantity(resultSet.getInt("quantity"));
+                    return invoiceItem;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 }
