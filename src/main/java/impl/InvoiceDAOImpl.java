@@ -102,6 +102,22 @@ public class InvoiceDAOImpl  implements InvoiceDAO {
 
     @Override
     public Invoice getInvoiceById(int id) {
+        String sql = "SELECT * FROM invoices WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    Invoice invoice = new Invoice();
+                    invoice.setId(resultSet.getInt("id"));
+                    invoice.setFirmId(resultSet.getInt("firm_id"));
+                    invoice.setInvoiceDate(resultSet.getDate("invoice_date").toLocalDate());
+                    return invoice;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
@@ -117,7 +133,14 @@ public class InvoiceDAOImpl  implements InvoiceDAO {
 
     @Override
     public int getTotalInvoiceCount() throws SQLException {
-        return 0;
+        String query = "SELECT COUNT(*) AS total FROM invoices;";
+        try (PreparedStatement stmt = connection.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("total");
+            }
+            return 0;
+        }
     }
 
     @Override
