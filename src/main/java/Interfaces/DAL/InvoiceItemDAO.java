@@ -13,8 +13,5 @@ public interface InvoiceItemDAO {
     void updateInvoiceItem(InvoiceItem invoiceItem);
     void deleteInvoiceItem(long id);
     void deleteInvoiceItem(int invoiceId, int itemId) throws SQLException;
-
-    void updateInvoiceItem(int invoiceId, int id, int quantity) throws SQLException;
     InvoiceItem getInvoiceItemByInvoiceAndItemId(int invoiceId, int itemId);
-
 }
