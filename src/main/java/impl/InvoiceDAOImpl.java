@@ -1,14 +1,16 @@
 package impl;
 
 import Interfaces.DAL.InvoiceDAO;
+import config.ConnectionManager;
 import entity.Invoice;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class InvoiceDAOImpl  implements InvoiceDAO {
+import static java.sql.DriverManager.getConnection;
 
+public class InvoiceDAOImpl implements InvoiceDAO {
     private final Connection connection;
 
     public InvoiceDAOImpl(Connection connection) {
@@ -33,29 +35,38 @@ public class InvoiceDAOImpl  implements InvoiceDAO {
         }
     }
 
-    @Override
-    public void updateInvoice(Invoice invoice) {
-        String sql = "UPDATE invoices SET firm_id = ?, invoice_date = ? WHERE id = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, invoice.getFirmId());
-            statement.setDate(2, Date.valueOf(invoice.getInvoiceDate()));
-            statement.setInt(3, invoice.getId());
 
-            int rowsUpdated = statement.executeUpdate();
-            System.out.println("Накладные обновлены " + rowsUpdated + " строки");
+    @Override
+    public Invoice getInvoiceById(int id) {
+        String sql = "SELECT * FROM invoices WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, id);
+
+            try (ResultSet resultSet = statement.executeQuery()) {
+                if (resultSet.next()) {
+                    Invoice invoice = new Invoice();
+                    invoice.setId(resultSet.getInt("id"));
+                    invoice.setFirmId(resultSet.getInt("firm_id"));
+                    invoice.setInvoiceDate(resultSet.getDate("invoice_date").toLocalDate());
+                    return invoice;
+                }
+            }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return null;
     }
 
+
     @Override
-    public void deleteInvoice(long id) {
-        String sql = "DELETE FROM invoices WHERE id = ?";
-        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-            stmt.setLong(1, id);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public int getTotalInvoiceCount() throws SQLException {
+        String query = "SELECT COUNT(*) AS total FROM invoices;";
+        try (PreparedStatement stmt = connection.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("total");
+            }
+            return 0;
         }
     }
 
@@ -100,24 +111,130 @@ public class InvoiceDAOImpl  implements InvoiceDAO {
         return invoices;
     }
 
-    @Override
-    public Invoice getInvoiceById(int id) {
-        String sql = "SELECT * FROM invoices WHERE id = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, id);
 
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
+    @Override
+    public void updateInvoice(Invoice invoice) {
+        String sql = "UPDATE invoices SET firm_id = ?, invoice_date = ? WHERE id = ?";
+        try (PreparedStatement statement = connection.prepareStatement(sql)) {
+            statement.setInt(1, invoice.getFirmId());
+            statement.setDate(2, Date.valueOf(invoice.getInvoiceDate()));
+            statement.setInt(3, invoice.getId());
+
+            int rowsUpdated = statement.executeUpdate();
+            System.out.println("Накладные обновлены " + rowsUpdated + " строки");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+    @Override
+    public void deleteInvoice(long id) {
+        String sql = "DELETE FROM invoices WHERE id = ?";
+        try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+            stmt.setLong(1, id);
+            stmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public List<Invoice> getInvoicesByFirmName(String firmName) {
+        List<Invoice> invoices = new ArrayList<>();
+        String query = "SELECT i.id, i.firm_id, i.invoice_date, f.name AS firm_name " +
+                "FROM invoices i " +
+                "JOIN firms f ON i.firm_id = f.id " +
+                "WHERE f.name LIKE ?";
+
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, "%" + firmName + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
                     Invoice invoice = new Invoice();
-                    invoice.setId(resultSet.getInt("id"));
-                    invoice.setFirmId(resultSet.getInt("firm_id"));
-                    invoice.setInvoiceDate(resultSet.getDate("invoice_date").toLocalDate());
-                    return invoice;
+                    invoice.setId((int) rs.getLong("id"));
+                    invoice.setFirmId(rs.getInt("firm_id"));
+                    invoice.setFirmName(rs.getString("firm_name"));
+                    invoice.setInvoiceDate(rs.getDate("invoice_date").toLocalDate());
+                    invoices.add(invoice);
                 }
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
+        return invoices;
+    }
+
+    @Override
+    public List<Invoice> getInvoicesByFirmNameAndDate(String firmName, String invoiceDate) {
+        List<Invoice> invoices = new ArrayList<>();
+        String query = """
+        SELECT i.id, i.firm_id, i.invoice_date, f.name AS firm_name
+        FROM invoices i
+        JOIN firms f ON i.firm_id = f.id
+        WHERE f.name LIKE ? AND DATE_FORMAT(i.invoice_date, '%Y-%m-%d') LIKE ?
+    """;
+
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, "%" + firmName + "%");
+            ps.setString(2, invoiceDate + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Invoice invoice = new Invoice();
+                    invoice.setId(rs.getInt("id"));
+                    invoice.setFirmId(rs.getInt("firm_id"));
+                    invoice.setFirmName(rs.getString("firm_name"));
+                    invoice.setInvoiceDate(rs.getDate("invoice_date").toLocalDate());
+                    invoices.add(invoice);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return invoices;
+    }
+
+    @Override
+    public List<Invoice> getInvoicesByDate(String invoiceDate) {
+        List<Invoice> invoices = new ArrayList<>();
+        String query = """
+        SELECT i.id, i.firm_id, i.invoice_date, f.name AS firm_name 
+        FROM invoices i 
+        JOIN firms f ON i.firm_id = f.id 
+        WHERE DATE_FORMAT(i.invoice_date, '%Y-%m-%d') LIKE ?
+    """;
+
+        try (PreparedStatement ps = connection.prepareStatement(query)) {
+            ps.setString(1, invoiceDate + "%");
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Invoice invoice = new Invoice();
+                    invoice.setId(rs.getInt("id"));
+                    invoice.setFirmId(rs.getInt("firm_id"));
+                    invoice.setFirmName(rs.getString("firm_name"));
+                    invoice.setInvoiceDate(rs.getDate("invoice_date").toLocalDate());
+                    invoices.add(invoice);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return invoices;
+    }
+
+    @Override
+    public int getTotalSearchCount(String search) throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public int getTotalCountByDateAndName(String search, Integer day, Integer month, Integer year) throws SQLException {
+        return 0;
+    }
+
+    @Override
+    public List<Invoice> getInvoicesWithPagination(int limit, int offset) throws SQLException {
         return null;
     }
 
@@ -127,44 +244,8 @@ public class InvoiceDAOImpl  implements InvoiceDAO {
     }
 
     @Override
-    public List<Invoice> getInvoicesWithPagination(int limit, int offset) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public int getTotalInvoiceCount() throws SQLException {
-        String query = "SELECT COUNT(*) AS total FROM invoices;";
-        try (PreparedStatement stmt = connection.prepareStatement(query);
-             ResultSet rs = stmt.executeQuery()) {
-            if (rs.next()) {
-                return rs.getInt("total");
-            }
-            return 0;
-        }
-    }
-
-    @Override
-    public List<Invoice> getInvoicesByFirmName(String firmName) {
-        return null;
-    }
-
-    @Override
-    public List<Invoice> getInvoicesByFirmNameAndDate(String firmName, String invoiceDate) {
-        return null;
-    }
-
-    @Override
-    public List<Invoice> getInvoicesByDate(String invoiceDate) {
-        return null;
-    }
-
-    @Override
-    public int getTotalSearchCount(String search) throws SQLException {
-        return 0;
-    }
-
-    @Override
     public List<Invoice> searchInvoicesWithPagination(String search, int limit, int offset) throws SQLException {
+
         return null;
     }
 
@@ -173,8 +254,5 @@ public class InvoiceDAOImpl  implements InvoiceDAO {
         return null;
     }
 
-    @Override
-    public int getTotalCountByDateAndName(String search, Integer day, Integer month, Integer year) throws SQLException {
-        return 0;
-    }
+
 }
