@@ -100,7 +100,10 @@ public class InvoiceCreateServlet extends HttpServlet {
                     }
                 }
             }
-            resp.sendRedirect("/invoices");
+
+            String currentPage = req.getParameter("page");
+            String searchParam = req.getParameter("search");
+            resp.sendRedirect("/invoices?page=" + currentPage + "&search=" + searchParam);
         } catch (Exception e) {
             e.printStackTrace();
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Ошибка при создании накладной");

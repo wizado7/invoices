@@ -68,6 +68,12 @@ public class InvoiceUpdateServlet extends HttpServlet {
                 req.setAttribute("items", items);
                 req.setAttribute("firm", firm);
 
+                req.setAttribute("currentPage", req.getParameter("page"));
+                req.setAttribute("searchParam", req.getParameter("search"));
+                req.setAttribute("day", req.getParameter("day"));
+                req.setAttribute("month", req.getParameter("month"));
+                req.setAttribute("year", req.getParameter("year"));
+
                 req.getRequestDispatcher("/invoice-update.jsp").forward(req, resp);
             } catch (IllegalArgumentException e) {
                 resp.sendError(HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
@@ -123,7 +129,14 @@ public class InvoiceUpdateServlet extends HttpServlet {
                 }
             }
 
-            resp.sendRedirect("/invoices");
+            String currentPage = req.getParameter("page");
+            String searchParam = req.getParameter("search");
+            String day = req.getParameter("day");
+            String month = req.getParameter("month");
+            String year = req.getParameter("year");
+
+            resp.sendRedirect("/invoices?page=" + currentPage + "&search=" + searchParam + "&day=" + day + "&month=" + month + "&year=" + year);
+
         } catch (Exception e) {
             e.printStackTrace();
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Ошибка при обновлении накладной");
