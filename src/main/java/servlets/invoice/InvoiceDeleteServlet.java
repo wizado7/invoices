@@ -41,8 +41,11 @@ public class InvoiceDeleteServlet extends HttpServlet {
 
             String currentPage = req.getParameter("page");
             String searchParam = req.getParameter("search");
+            String day = req.getParameter("day");
+            String month = req.getParameter("month");
+            String year = req.getParameter("year");
 
-            resp.sendRedirect("/invoices?page=" + currentPage + "&search=" + searchParam);
+            resp.sendRedirect("/invoices?page=" + currentPage + "&search=" + searchParam + "&day=" + day + "&month=" + month + "&year=" + year);
         } catch (Exception e) {
             e.printStackTrace();
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Ошибка удаления накладной");

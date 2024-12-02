@@ -62,6 +62,9 @@
                         <input type="hidden" name="id" value="<%= invoice.getId() %>">
                         <input type="hidden" name="page" value="${currentPage}" />
                         <input type="hidden" name="search" value="${searchParam}" />
+                        <input type="hidden" name="day" value="${param.day}">
+                        <input type="hidden" name="month" value="${param.month}">
+                        <input type="hidden" name="year" value="${param.year}">
                         <button class="button_delete" type="submit">Удалить</button>
                     </form>
                 </td>
