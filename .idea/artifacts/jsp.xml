@@ -5,7 +5,7 @@
       <element id="module-output" name="invoices_db" />
       <element id="dir-copy" path="$PROJECT_DIR$/src/main/java" />
       <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/index.jsp" />
-      <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/view/jsp/invoices.jsp" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/view/jsp/invoices/invoices.jsp" />
       <element id="javaee-facet-resources" facet="invoices_db/web/Web" />
       <element id="dir-copy" path="$PROJECT_DIR$/src/main/webapp/META-INF" />
       <element id="dir-copy" path="$PROJECT_DIR$/src/main/java/servlets" />
@@ -17,6 +17,14 @@
           <element id="module-output" name="invoices_db" />
         </element>
       </element>
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/view/jsp/invoices/invoice-create.jsp" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/view/jsp/invoices/invoice-update.jsp" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/view/jsp/invoices/invoices-statistics.jsp" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/java/servlets/invoice/InvoiceCreateServlet.java" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/java/servlets/invoice/InvoiceDeleteServlet.java" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/java/servlets/invoice/InvoiceSearchServlet.java" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/java/servlets/invoice/InvoiceStatisticsServlet.java" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/java/servlets/invoice/InvoiceUpdateServlet.java" />
     </root>
   </artifact>
 </component>
