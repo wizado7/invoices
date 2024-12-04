@@ -23,9 +23,9 @@ public class ItemSearchServlet extends HttpServlet {
 
     @Override
     public void init() {
-        Connection connection = null;
+
         try {
-            connection = ConnectionManager.getConnection();
+            Connection connection = ConnectionManager.getConnection();
             itemDAO = new ItemDAOImpl(connection);
         } catch (SQLException e) {
             throw new RuntimeException(e);
