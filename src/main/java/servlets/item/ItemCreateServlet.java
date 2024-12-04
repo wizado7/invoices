@@ -30,5 +30,36 @@ public class ItemCreateServlet extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.getRequestDispatcher("/items-create.jsp").forward(request, response);
+    }
 
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            String itemName = request.getParameter("itemName");
+            String itemPriceStr = request.getParameter("itemPrice");
+
+            if (itemName == null || itemPriceStr == null || itemName.isEmpty() || itemPriceStr.isEmpty()) {
+                request.setAttribute("error", "Все поля обязательны для заполнения.");
+                request.getRequestDispatcher("/items-create.jsp").forward(request, response);
+                return;
+            }
+
+            double itemPrice = Double.parseDouble(itemPriceStr);
+
+
+            Item newItem = new Item();
+            newItem.setName(itemName);
+            newItem.setPrice(itemPrice);
+
+
+            itemDAO.addItem(newItem);
+
+            response.sendRedirect( "/invoices");
+        } catch (Exception e) {
+            throw new ServletException("Ошибка при добавлении товара", e);
+        }
+    }
 }
