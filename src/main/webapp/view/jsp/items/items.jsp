@@ -25,7 +25,7 @@
                 <label for="itemPrice">Цена:</label>
                 <input type="number" id="itemPrice" name="itemPrice" step="0.01">
 
-                <button class="button1" type="submit">Поиск</button>
+                <button class="button_search" type="submit">Поиск</button>
             </form>
         </div>
 

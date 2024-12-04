@@ -35,7 +35,7 @@
                     placeholder="+7XXXXXXXXXX"
             >
 
-            <button class="button1" type="submit">Поиск</button>
+            <button class="button_search" type="submit">Поиск</button>
         </form>
     </div>
     <table border="1">
