@@ -31,5 +31,26 @@ public class ItemUpdateServlet extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        int itemId;
+        try {
+            itemId = Integer.parseInt(req.getParameter("id"));
+        } catch (NumberFormatException | NullPointerException e) {
+            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Некорректный ID товара");
+            return;
+        }
+
+        Item item = itemDAO.getItemById(itemId);
+        if (item == null) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Товар с ID " + itemId + " не найден");
+            return;
+        }
+
+
+        req.setAttribute("item", item);
+        req.getRequestDispatcher("/items-update.jsp").forward(req, resp);
+    }
+
 
 }
