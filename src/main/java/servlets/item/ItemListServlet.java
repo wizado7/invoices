@@ -32,4 +32,17 @@ public class ItemListServlet extends HttpServlet {
             throw new ServletException("Ошибка подключения к базе данных", e);
         }
     }
+
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try {
+            List<Item> items = itemDAO.getAllItems();
+            req.setAttribute("items", items);
+
+            req.getRequestDispatcher("/items.jsp").forward(req, resp);
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Ошибка при загрузке накладных");
+        }
+    }
 }
