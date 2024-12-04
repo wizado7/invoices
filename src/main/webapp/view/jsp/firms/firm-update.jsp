@@ -5,9 +5,9 @@
 <html>
 <head>
     <title>Обновление товара</title>
-    <link href="/style/create.css" rel="stylesheet" type="text/css">
+    <link href="../style/create.css" rel="stylesheet" type="text/css">
     <link href="/style/table-style.css" rel="stylesheet" type="text/css">
-    <script src="/script/validate.js"></script>
+    <script src="../script/validate.js"></script>
 </head>
 <body>
 <div class="header-container">
