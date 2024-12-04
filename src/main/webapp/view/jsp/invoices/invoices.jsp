@@ -83,19 +83,20 @@
         </table>
         <br>
         <div class="pagination">
-            <c:if test="${currentPage != 1}">
-                <a href="?page=${currentPage - 1}&search=${searchParam}">&lt;</a>
+            <c:if test="${currentPage > 1}">
+                <a href="?page=${currentPage - 1 > 0 ? currentPage - 1 : 1}&search=${searchParam}&day=${param.day}&moнnth=${param.month}&year=${param.year}">&lt;</a>
             </c:if>
 
+
             <c:if test="${currentPage > 2}">
-                <a href="?page=1&search=${searchParam}">1</a>
+                <a href="?page=1&search=${searchParam}&day=${param.day}&month=${param.month}&year=${param.year}">1</a>
                 <c:if test="${currentPage > 3}">
                     <span>...</span>
                 </c:if>
             </c:if>
 
-            <c:if test="${currentPage != 1}">
-                <a href="?page=${currentPage - 1}&search=${searchParam}&day=${param.day}&month=${param.month}&year=${param.year}">${currentPage - 1}</a>
+            <c:if test="${currentPage > 1}">
+                <a href="?page=${currentPage - 1 > 0 ? currentPage - 1 : 1}&search=${searchParam}&day=${param.day}&moнnth=${param.month}&year=${param.year}">${currentPage - 1}</a>
             </c:if>
 
             <c:if test="${currentPage > 2}">
