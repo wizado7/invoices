@@ -103,8 +103,8 @@
                 <a href="?page=${currentPage}&search=${searchParam}&day=${param.day}&month=${param.month}&year=${param.year}">${currentPage}</a>
             </c:if>
 
-            <c:if test="${currentPage > 2}">
-                <a href="?page=${currentPage + 1}&search=${searchParam}&day=${param.day}&month=${param.month}&year=${param.year}">${currentPage + 1}</a>
+            <c:if test="${currentPage < totalPages}">
+                <a href="?page=${currentPage - totalPages > 0 ? currentPage + 1 : totalPages}&search=${searchParam}&day=${param.day}&month=${param.month}&year=${param.year}">${currentPage + 1}</a>
             </c:if>
 
             <c:if test="${currentPage - totalPages - 1}">
