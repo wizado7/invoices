@@ -29,8 +29,7 @@ public class FirmDeleteServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try (Connection connection = ConnectionManager.getConnection()) {
-            FirmDAOImpl firmDAO = new FirmDAOImpl(connection);
+        try {
             long id = Long.parseLong(req.getParameter("id"));
             firmDAO.deleteFirm(id);
 

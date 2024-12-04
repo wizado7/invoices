@@ -38,23 +38,14 @@ public class FirmUpdateServlet extends HttpServlet {
             return;
         }
 
-        try (Connection connection = ConnectionManager.getConnection()) {
-            FirmDAO firmDAO = new FirmDAOImpl(connection);
-
-
-            Firm firm = firmDAO.getFirmById(firmId);
-            if (firm == null) {
-                resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Фирма с ID " + firmId + " не найден");
-                return;
-            }
-
-
-            req.setAttribute("firm", firm);
-            req.getRequestDispatcher("/firm-update.jsp").forward(req, resp);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Ошибка базы данных");
+        Firm firm = firmDAO.getFirmById(firmId);
+        if (firm == null) {
+            resp.sendError(HttpServletResponse.SC_NOT_FOUND, "Фирма с ID " + firmId + " не найден");
+            return;
         }
+
+        req.setAttribute("firm", firm);
+        req.getRequestDispatcher("/firm-update.jsp").forward(req, resp);
     }
 
     @Override
@@ -77,23 +68,24 @@ public class FirmUpdateServlet extends HttpServlet {
             firm.setAddress(firmAddress);
             firm.setPhone(firmPhone);
 
-            try (Connection connection = ConnectionManager.getConnection()) {
-                FirmDAO firmDAO = new FirmDAOImpl(connection);
+            try {
                 firmDAO.updateFirm(firm);
+            } catch (NumberFormatException e) {
+                System.err.println("Неправильный формат номера" + e.getMessage());
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Неправильный формат номера");
+
+
+                response.sendRedirect("/invoices");
+
+            } catch (IllegalArgumentException e) {
+                System.err.println("Invalid input: " + e.getMessage());
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Неправильно введеные данные");
             }
 
-
-            response.sendRedirect("/invoices");
-
-        } catch (NumberFormatException e) {
-            System.err.println("Неправильный формат номера" + e.getMessage());
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Неправильный формат номера");
         } catch (IllegalArgumentException e) {
-            System.err.println("Invalid input: " + e.getMessage());
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Неправильно введеные данные");
-        } catch (SQLException e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Ошибка базы данных");
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 }
