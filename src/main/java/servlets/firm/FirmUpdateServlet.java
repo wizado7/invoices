@@ -57,4 +57,43 @@ public class FirmUpdateServlet extends HttpServlet {
         }
     }
 
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        try {
+            String idParam = request.getParameter("id");
+            String firmName = request.getParameter("firmName");
+            String firmAddress = request.getParameter("firmAddress");
+            String firmPhone = request.getParameter("firmPhone");
+
+
+            if (idParam == null || idParam.isEmpty()) {
+                throw new IllegalArgumentException("ID is missing.");
+            }
+            int firmId = Integer.parseInt(idParam);
+
+            Firm firm = new Firm();
+            firm.setId(firmId);
+            firm.setName(firmName);
+            firm.setAddress(firmAddress);
+            firm.setPhone(firmPhone);
+
+            try (Connection connection = ConnectionManager.getConnection()) {
+                FirmDAO firmDAO = new FirmDAOImpl(connection);
+                firmDAO.updateFirm(firm);
+            }
+
+
+            response.sendRedirect("/invoices");
+
+        } catch (NumberFormatException e) {
+            System.err.println("Неправильный формат номера" + e.getMessage());
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Неправильный формат номера");
+        } catch (IllegalArgumentException e) {
+            System.err.println("Invalid input: " + e.getMessage());
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Неправильно введеные данные");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Ошибка базы данных");
+        }
+    }
 }
