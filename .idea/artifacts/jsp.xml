@@ -10,7 +10,6 @@
       <element id="dir-copy" path="$PROJECT_DIR$/src/main/webapp/META-INF" />
       <element id="dir-copy" path="$PROJECT_DIR$/src/main/java/servlets" />
       <element id="dir-copy" path="$PROJECT_DIR$/src/main/webapp/view" />
-      <element id="file-copy" path="$PROJECT_DIR$/src/main/java/servlets/invoice/InvoicesListServlet.java" />
       <element id="javaee-facet-resources" facet="invoices_db/web/Web2" />
       <element id="directory" name="WEB-INF">
         <element id="directory" name="classes">
@@ -20,11 +19,12 @@
       <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/view/jsp/invoices/invoice-create.jsp" />
       <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/view/jsp/invoices/invoice-update.jsp" />
       <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/view/jsp/invoices/invoices-statistics.jsp" />
-      <element id="file-copy" path="$PROJECT_DIR$/src/main/java/servlets/invoice/InvoiceCreateServlet.java" />
-      <element id="file-copy" path="$PROJECT_DIR$/src/main/java/servlets/invoice/InvoiceDeleteServlet.java" />
-      <element id="file-copy" path="$PROJECT_DIR$/src/main/java/servlets/invoice/InvoiceSearchServlet.java" />
-      <element id="file-copy" path="$PROJECT_DIR$/src/main/java/servlets/invoice/InvoiceStatisticsServlet.java" />
-      <element id="file-copy" path="$PROJECT_DIR$/src/main/java/servlets/invoice/InvoiceUpdateServlet.java" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/view/jsp/items/items.jsp" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/view/jsp/firms/firm-create.jsp" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/view/jsp/firms/firms.jsp" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/view/jsp/items/items-update.jsp" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/view/jsp/items/items-create.jsp" />
+      <element id="file-copy" path="$PROJECT_DIR$/src/main/webapp/view/jsp/firms/firm-update.jsp" />
     </root>
   </artifact>
 </component>
