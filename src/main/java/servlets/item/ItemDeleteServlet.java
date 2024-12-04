@@ -30,11 +30,9 @@ public class ItemDeleteServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        try (Connection connection = ConnectionManager.getConnection()) {
-            ItemDAOImpl itemDAO = new ItemDAOImpl(connection);
+        try {
             long id = Long.parseLong(req.getParameter("id"));
             itemDAO.deleteItem(id);
-
             resp.sendRedirect("/invoices");
         } catch (Exception e) {
             e.printStackTrace();
