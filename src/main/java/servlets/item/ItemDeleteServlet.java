@@ -27,4 +27,18 @@ public class ItemDeleteServlet extends HttpServlet {
             throw new ServletException("Ошибка подключения к базе данных", e);
         }
     }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        try (Connection connection = ConnectionManager.getConnection()) {
+            ItemDAOImpl itemDAO = new ItemDAOImpl(connection);
+            long id = Long.parseLong(req.getParameter("id"));
+            itemDAO.deleteItem(id);
+
+            resp.sendRedirect("/invoices");
+        } catch (Exception e) {
+            e.printStackTrace();
+            resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Ошибка удаления накладной");
+        }
+    }
 }
